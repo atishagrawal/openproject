@@ -4,9 +4,11 @@
             e.preventDefault();
             e.stopPropagation();
         };
-        var localStorageKey = 'openProject-onboardingTour';
+        var storageKey = 'openProject-onboardingTour';
+        var currentTourPart = sessionStorage.getItem(storageKey);
+        var url = new URL(window.location.href);
 
-        var homescreenTourSteps = [
+        var homescreenOnboardingTourSteps = [
             {
                 'next #logo' : I18n.t('js.onboarding.steps.welcome'),
                 'showSkip' : false
@@ -118,50 +120,35 @@
             }
         ];
 
+        // Start after the intro modal (language selection)
+        // This has to be changed once the project selection is implemented
+        if(url.searchParams.get("first_time_user")) {
+            sessionStorage.setItem(storageKey, 'readyToStart');
+
+            // Start automatically when the language selection is closed
+            $('.op-modal--modal-close-button').click(function() {
+                startTour(homescreenOnboardingTourSteps, 'homescreenFinished')
+            });
+        }
 
         // ------------------------------- Tutorial Homescreen page -------------------------------
-
-        if (!window.OpenProject.guardedLocalStorage("openProject-onboardingTour")) {
-            var tutorialInstance = new EnjoyHint({
-                onEnd: function () {
-                    window.OpenProject.guardedLocalStorage(localStorageKey, 'homescreenFinished');
-                },
-                onSkip: function () {
-                    window.OpenProject.guardedLocalStorage(localStorageKey, 'skipped');
-                }
-            });
-
-            tutorialInstance.set(homescreenTourSteps);
-            tutorialInstance.run();
+        if (currentTourPart === "readyToStart") {
+            startTour(homescreenOnboardingTourSteps, 'homescreenFinished');
         };
-
 
         // ------------------------------- Tutorial Overview page -------------------------------
-
-        if (window.OpenProject.guardedLocalStorage("openProject-onboardingTour") === "homescreenFinished") {
-            var tutorialInstance = new EnjoyHint({
-                onEnd: function () {
-                    window.OpenProject.guardedLocalStorage(localStorageKey, 'overviewFinished');
-                },
-                onSkip: function () {
-                    window.OpenProject.guardedLocalStorage(localStorageKey, 'skipped');
-                }
-            });
-
-            tutorialInstance.set(overviewOnboardingTourSteps);
-            tutorialInstance.run();
+        if (currentTourPart === "homescreenFinished") {
+            startTour(overviewOnboardingTourSteps, 'overviewFinished');
         };
 
-
         // ------------------------------- Tutorial WP page -------------------------------
-
-        if (window.OpenProject.guardedLocalStorage("openProject-onboardingTour") === "overviewFinished") {
+        if (currentTourPart === "overviewFinished") {
             var tutorialInstance = new EnjoyHint({
                 onEnd: function () {
-                    window.OpenProject.guardedLocalStorage(localStorageKey, 'wpFinished');
+                    sessionStorage.setItem(storageKey, 'wpFinished');
                 },
                 onSkip: function () {
-                    window.OpenProject.guardedLocalStorage(localStorageKey, 'skipped');
+                    sessionStorage.setItem(storageKey, 'skipped');
                     $('.wp-table--details-link, .wp-table-context-menu-link').removeClass('-disabled').unbind('click', preventClickHandler);
                 }
             });
@@ -181,6 +168,20 @@
                 subtree: true
             });
 
+        }
+
+        function startTour(steps, storageValue) {
+            var tutorialInstance = new EnjoyHint({
+                onEnd: function () {
+                    sessionStorage.setItem(storageKey, storageValue);
+                },
+                onSkip: function () {
+                    sessionStorage.setItem(storageKey, 'skipped');
+                }
+            });
+
+            tutorialInstance.set(steps);
+            tutorialInstance.run();
         }
     });
 }(jQuery));
