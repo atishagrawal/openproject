@@ -63,6 +63,48 @@
             }
         ];
 
+        var scrumOverviewOnboardingTourSteps = [
+            {
+                'next #content' : I18n.t('js.onboarding.steps.project_overview'),
+                'showSkip' : false,
+                'containerClass' : '-dark'
+            },
+            {
+                'next #menu-sidebar' : I18n.t('js.onboarding.steps.sidebar'),
+                'showSkip' : false
+            },
+            {
+                'next .settings-menu-item' : I18n.t('js.onboarding.steps.settings'),
+                'showSkip' : false
+            },
+            {
+                'next .members-menu-item' : I18n.t('js.onboarding.steps.members'),
+                'showSkip' : false
+            },
+            {
+                'next .backlogs-menu-item' : I18n.t('js.onboarding.steps.backlogs'),
+                'showSkip' : false
+            },
+            {
+                'click .toggler' : I18n.t('js.onboarding.steps.wp_toggler'),
+                'showSkip' : false,
+                'shape' : 'circle',
+                'radius' : 20,
+                onBeforeStart: function () {
+                    $('.enjoyhint').toggleClass('-clickable', true);
+                }
+            },
+            {
+                "click .wp-query-menu--item[data-category='default']": I18n.t('js.onboarding.steps.wp_query'),
+                'showSkip' : false,
+                'timeout' : 200,
+                'margin' : 0,
+                onBeforeStart: function () {
+                    $('.enjoyhint').toggleClass('-clickable', true);
+                }
+            }
+        ];
+        
         var wpOnboardingTourSteps = [
             {
                 'custom .wp-table--row' : I18n.t('js.onboarding.steps.wp_list'),
@@ -138,7 +180,12 @@
 
         // ------------------------------- Tutorial Overview page -------------------------------
         if (currentTourPart === "homescreenFinished") {
-            startTour(overviewOnboardingTourSteps, 'overviewFinished');
+            if($('.backlogs-menu-item').length > 0) {
+                startTour(scrumOverviewOnboardingTourSteps, 'overviewFinished');
+            } else {
+                startTour(overviewOnboardingTourSteps, 'overviewFinished');
+            }
+
         };
 
         // ------------------------------- Tutorial WP page -------------------------------

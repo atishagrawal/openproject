@@ -306,6 +306,7 @@ en:
         sidebar: 'From the project menu you can access all modules within a project or collapse it with the icon on the top.'
         settings: 'In the Project settings you can configure your project’s modules.'
         members: 'Invite new Members to join your project.'
+        backlogs: 'Manage your work in the Backlogs view. Open your Task board from the Sprint Drop-down menu and visualize progress for each sprint.'
         wp_toggler: 'Here is the Work package section. Have a look and click on the arrow.'
         wp_query: "Let's have a look at currently opened work packages. Click on the link to see them."
         wp_list: 'This is the work package list. Double click on a work package to see its details.'
